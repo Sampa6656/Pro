@@ -10,6 +10,9 @@ const { open } = require('sqlite');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
+// Defina o cache aqui, logo após o path ser carregado:
+process.env.PUPPETEER_CACHE_DIR = path.join(__dirname, '.puppeteer-cache');
+
 if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
 if (!fs.existsSync('uploads/imagens')) fs.mkdirSync('uploads/imagens', { recursive: true });
 
