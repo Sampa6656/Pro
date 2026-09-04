@@ -9,8 +9,9 @@ const sqlite3 = require('sqlite3').verbose();
 const { open } = require('sqlite');
 const path = require('path');
 const bcrypt = require('bcryptjs');
+const puppeteer = require('puppeteer'); // 🔥 IMPORTAÇÃO NOVA AQUI
 
-// Define o cache do Puppeteer localmente na pasta do projeto para evitar erros de permissão no Linux
+// Define o cache do Puppeteer localmente na pasta do projeto
 process.env.PUPPETEER_CACHE_DIR = path.join(__dirname, '.puppeteer-cache');
 
 if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
@@ -124,6 +125,7 @@ function criarClienteWhatsApp(idSessao) {
     const client = new Client({
         authStrategy: new LocalAuth({ clientId: idSessao }),
         puppeteer: { 
+            executablePath: puppeteer.executablePath(), // 🔥 LOCALIZA O NAVEGADOR AUTOMATICAMENTE
             headless: true,
             args: [
                 '--no-sandbox',
