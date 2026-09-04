@@ -132,14 +132,7 @@ function criarClienteWhatsApp(idSessao) {
                 '--disable-accelerated-2d-canvas',
                 '--no-first-run',
                 '--no-zygote',
-                '--single-process',
-                '--disable-gpu',
-                '--disable-extensions',
-                '--disable-infobars',
-                '--hide-scrollbars',
-                '--mute-audio',
-                '--disable-background-networking',
-                '--disable-sync'
+                '--disable-gpu'
             ]
         }
     });
