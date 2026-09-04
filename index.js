@@ -10,7 +10,7 @@ const { open } = require('sqlite');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 
-// Defina o cache aqui, logo após o path ser carregado:
+// Define o cache do Puppeteer localmente na pasta do projeto para evitar erros de permissão no Linux
 process.env.PUPPETEER_CACHE_DIR = path.join(__dirname, '.puppeteer-cache');
 
 if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
@@ -124,7 +124,17 @@ function criarClienteWhatsApp(idSessao) {
     const client = new Client({
         authStrategy: new LocalAuth({ clientId: idSessao }),
         puppeteer: { 
-            args: ['--no-sandbox', '--disable-setuid-sandbox'] 
+            headless: true,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-accelerated-2d-canvas',
+                '--no-first-run',
+                '--no-zygote',
+                '--single-process',
+                '--disable-gpu'
+            ]
         }
     });
 
@@ -293,7 +303,6 @@ app.post('/api/testar-template', upload.single('imagem'), async (req, res) => {
 async function executarDisparoReal(configCampanha) {
     const { nomeCampanha, carteiraId, templateId, validarNumeros, caminhoPlanilha, nomeArquivoOriginal } = configCampanha;
     
-    // Pega todas as sessões conectadas ativamente para distelhamento rotativo
     let sessoesConectadas = [];
     for (let [nome, dados] of sessoesWhatsAppMap.entries()) {
         if (dados.status === 'Conectado') sessoesConectadas.push(nome);
@@ -345,14 +354,12 @@ async function executarDisparoReal(configCampanha) {
 
         progressoCampanha.atual++;
         
-        // 🧠 Melhoria: Descanso Automático (Cooldown) a cada 30 envios para evitar banimento por lote
         if (contadorEnviosLote > 0 && contadorEnviosLote % 30 === 0) {
             progressoCampanha.nome = `${nomeCampanha} (Pausa de Segurança Anti-Spam - 3 min)`;
-            await delay(180000); // 3 minutos de pausa
+            await delay(180000);
             progressoCampanha.nome = nomeCampanha;
         }
 
-        // Distribuição rotativa automática entre todas as contas conectadas
         const nomeSessaoAtual = sessoesConectadas[indiceSessaoRotativa % sessoesConectadas.length];
         indiceSessaoRotativa++;
         const sessaoObj = sessoesWhatsAppMap.get(nomeSessaoAtual);
