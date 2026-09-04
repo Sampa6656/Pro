@@ -124,13 +124,17 @@ function criarClienteWhatsApp(idSessao) {
     const client = new Client({
         authStrategy: new LocalAuth({ clientId: idSessao }),
         puppeteer: { 
-            executablePath: '/usr/bin/chromium-browser',
             headless: true,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
                 '--disable-dev-shm-usage',
-                '--disable-gpu'
+                '--disable-accelerated-2d-canvas',
+                '--no-first-run',
+                '--no-zygote',
+                '--disable-gpu',
+                '--disable-software-rasterizer',
+                '--disable-features=IsolateOrigins,site-per-process'
             ]
         }
     });
