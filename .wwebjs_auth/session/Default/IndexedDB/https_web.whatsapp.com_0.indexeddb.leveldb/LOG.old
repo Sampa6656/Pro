@@ -1,0 +1,28 @@
+2026/09/02-01:27:53.293 4e24 Reusing MANIFEST C:\Users\Math\Desktop\Programy\Plataforma WhatsApp Ativo\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/09/02-01:27:53.294 4e24 Recovering log #490
+2026/09/02-01:27:53.299 4e24 Reusing old log C:\Users\Math\Desktop\Programy\Plataforma WhatsApp Ativo\.wwebjs_auth\session\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000490.log 
+2026/09/02-01:29:00.130 394c Level-0 table #503: started
+2026/09/02-01:29:00.147 394c Level-0 table #503: 1280337 bytes OK
+2026/09/02-01:29:00.148 394c Delete type=0 #490
+2026/09/02-01:29:06.513 4e24 Compacting 1@1 + 9@2 files
+2026/09/02-01:29:06.576 4e24 Generated table #504@1: 91305 keys, 2242564 bytes
+2026/09/02-01:29:06.628 4e24 Generated table #505@1: 101682 keys, 2253403 bytes
+2026/09/02-01:29:06.670 4e24 Generated table #506@1: 48266 keys, 2237672 bytes
+2026/09/02-01:29:06.687 4e24 Generated table #507@1: 3563 keys, 2146950 bytes
+2026/09/02-01:29:06.701 4e24 Generated table #508@1: 2074 keys, 2148139 bytes
+2026/09/02-01:29:06.742 4e24 Generated table #509@1: 22239 keys, 2233283 bytes
+2026/09/02-01:29:06.767 4e24 Generated table #510@1: 17116 keys, 2179071 bytes
+2026/09/02-01:29:06.815 4e24 Generated table #511@1: 87694 keys, 2234792 bytes
+2026/09/02-01:29:06.832 4e24 Generated table #512@1: 28435 keys, 853289 bytes
+2026/09/02-01:29:06.832 4e24 Compacted 1@1 + 9@2 files => 18529163 bytes
+2026/09/02-01:29:06.832 4e24 compacted to: files[ 0 0 9 0 0 0 0 ]
+2026/09/02-01:29:06.833 4e24 Delete type=2 #492
+2026/09/02-01:29:06.833 4e24 Delete type=2 #493
+2026/09/02-01:29:06.833 4e24 Delete type=2 #494
+2026/09/02-01:29:06.833 4e24 Delete type=2 #495
+2026/09/02-01:29:06.833 4e24 Delete type=2 #496
+2026/09/02-01:29:06.833 4e24 Delete type=2 #497
+2026/09/02-01:29:06.833 4e24 Delete type=2 #498
+2026/09/02-01:29:06.833 4e24 Delete type=2 #499
+2026/09/02-01:29:06.833 4e24 Delete type=2 #500
+2026/09/02-01:29:06.833 4e24 Delete type=2 #503

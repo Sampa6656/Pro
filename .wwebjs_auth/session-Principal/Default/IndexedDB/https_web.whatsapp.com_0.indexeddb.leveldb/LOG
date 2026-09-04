@@ -1,0 +1,17 @@
+2026/09/02-03:34:44.211 1efc Reusing MANIFEST C:\Users\Math\Desktop\Programy\Plataforma WhatsApp Ativo\.wwebjs_auth\session-Principal\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/09/02-03:34:44.211 1efc Recovering log #326
+2026/09/02-03:34:44.247 1efc Reusing old log C:\Users\Math\Desktop\Programy\Plataforma WhatsApp Ativo\.wwebjs_auth\session-Principal\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000326.log 
+2026/09/02-03:34:49.223 3cf0 Level-0 table #339: started
+2026/09/02-03:34:49.242 3cf0 Level-0 table #339: 1135940 bytes OK
+2026/09/02-03:34:49.243 3cf0 Delete type=0 #326
+2026/09/02-03:34:49.290 1efc Compacting 1@1 + 8@2 files
+2026/09/02-03:34:49.356 1efc Generated table #340@1: 91029 keys, 2242597 bytes
+2026/09/02-03:34:49.401 1efc Generated table #341@1: 69147 keys, 2256572 bytes
+2026/09/02-03:34:49.428 1efc Generated table #342@1: 22889 keys, 2176714 bytes
+2026/09/02-03:34:49.446 1efc Generated table #343@1: 2284 keys, 2152319 bytes
+2026/09/02-03:34:49.474 1efc Generated table #344@1: 16480 keys, 2208087 bytes
+2026/09/02-03:34:49.512 1efc Generated table #345@1: 19957 keys, 2202625 bytes
+2026/09/02-03:34:49.558 1efc Generated table #346@1: 87501 keys, 2235412 bytes
+2026/09/02-03:34:49.569 1efc Generated table #347@1: 19274 keys, 583355 bytes
+2026/09/02-03:34:49.569 1efc Compacted 1@1 + 8@2 files => 16057681 bytes
+2026/09/02-03:34:49.570 1efc compacted to: files[ 0 0 8 0 0 0 0 ]

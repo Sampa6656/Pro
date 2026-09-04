@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Plataforma de Disparo Massivo WhatsApp</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: #f4f7f6; color: #333; }
+        header { background-color: #075E54; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        nav { background-color: #128C7E; display: flex; padding: 0 30px; flex-wrap: wrap; }
+        nav button { background: none; border: none; color: white; padding: 15px 20px; cursor: pointer; font-size: 15px; font-weight: bold; display: none; }
+        nav button:hover, nav button.active { background-color: #075E54; border-bottom: 4px solid #25D366; }
+        .badge.lido { background-color: #cce5ff; color: #004085; } /* Azul clarinho indicando leitura */
+        .container { max-width: 1200px; margin: 30px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        input, select, textarea, button.btn { width: 100%; padding: 12px; margin: 10px 0 20px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button.btn { background-color: #25D366; color: white; border: none; font-weight: bold; cursor: pointer; font-size: 16px; }
+        button.btn:hover { background-color: #128C7E; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; font-size: 14px; }
+        th { background-color: #f8f9fa; color: #333; }
+        .badge { padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+        .badge.enviado { background-color: #d4edda; color: #155724; }
+        .badge.erro { background-color: #f8d7da; color: #721c24; }
+        .badge.conectado { background-color: #d4edda; color: #155724; }
+        .badge.desconectado { background-color: #f8d7da; color: #721c24; }
+        .box-bloco { background: #f8f9fa; padding: 20px; border-radius: 6px; margin-bottom: 25px; border: 1px solid #e9ecef; }
+        
+        /* Estilo das caixas explicativas de filtros */
+        .filtro-card { background: white; border: 1px solid #cbd5e1; border-radius: 6px; padding: 14px; margin-bottom: 12px; transition: all 0.2s; }
+        .filtro-card:hover { border-color: #25D366; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+        .filtro-card label { display: flex; align-items: flex-start; gap: 10px; font-weight: bold; cursor: pointer; margin: 0; color: #0f172a; }
+        .filtro-card input[type="checkbox"] { width: 18px; height: 18px; margin-top: 2px; cursor: pointer; accent-color: #25D366; }
+        .filtro-descricao { font-size: 12px; color: #64748b; margin-top: 6px; margin-left: 28px; line-height: 1.4; }
+
+        .grid-layout { display: flex; gap: 30px; flex-wrap: wrap; }
+        .form-col { flex: 1; min-width: 350px; }
+        .preview-col { width: 340px; background: #efeae2; padding: 20px; border-radius: 8px; border: 1px solid #ddd; height: fit-content; position: sticky; top: 20px; }
+        
+        .whatsapp-chat { background-image: radial-gradient(#d1d7db 0.75px, #efeae2 0.75px); background-size: 15px 15px; padding: 15px; border-radius: 6px; min-height: 350px; display: flex; flex-direction: column; justify-content: flex-end; }
+        .whatsapp-bubble { background: #d9fdd3; padding: 8px; border-radius: 7px; max-width: 100%; box-shadow: 0 1px 0.5px rgba(0,0,0,0.13); word-break: break-word; font-size: 14px; position: relative; }
+        .whatsapp-bubble img { width: 100%; border-radius: 5px; margin-bottom: 6px; display: none; object-fit: cover; max-height: 200px; }
+        .whatsapp-time { font-size: 10px; color: #999; text-align: right; margin-top: 4px; }
+
+        #painel-progresso { display: none; background: #e8f5e9; border: 1px solid #c8e6c9; padding: 20px; border-radius: 6px; margin-bottom: 20px; }
+        .progress-bar-container { background: #ddd; border-radius: 4px; height: 20px; width: 100%; overflow: hidden; margin: 10px 0; }
+        .progress-bar-fill { background: #25D366; height: 100%; width: 0%; transition: width 0.4s ease; }
+
+        .permissoes-box { display: flex; gap: 15px; flex-wrap: wrap; background: white; padding: 15px; border: 1px solid #ccc; border-radius: 4px; margin: 10px 0 20px 0; }
+        .permissoes-box label { display: flex; align-items: center; gap: 6px; font-weight: normal; cursor: pointer; margin: 0; }
+        .permissoes-box input { width: auto; margin: 0; cursor: pointer; }
+
+        #tela-login { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #075E54; }
+        .login-card { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 100%; max-width: 400px; text-align: center; }
+        .login-card h2 { color: #075E54; margin-top: 0; }
+        #app-principal { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="tela-login">
+        <div class="login-card">
+            <h2>⚡ WhatsApp Massivo</h2>
+            <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Entre com suas credenciais de acesso</p>
+            <form id="form-login">
+                <input type="email" id="login-email" placeholder="E-mail de Acesso" required>
+                <input type="password" id="login-senha" placeholder="Senha" required>
+                <button type="submit" class="btn">Entrar na Plataforma</button>
+            </form>
+            <small style="color: #999;">Padrão: admin@admin.com / Senha: 123456</small>
+        </div>
+    </div>
+
+    <div id="app-principal">
+        <header>
+            <h2>⚡ WhatsApp Massivo Pro</h2>
+            <div>
+                <span id="info-usuario" style="margin-right: 15px; font-size: 14px;"></span>
+                <span>Status: Online</span>
+                <button onclick="fazerLogout()" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 15px; font-weight: bold;">Sair</button>
+            </div>
+        </header>
+
+        <nav id="menu-navegacao">
+            <button class="tab-btn" id="btn-tab-campanha" onclick="abrirAba(event, 'aba-campanha')" data-aba="campanha">Nova Campanha</button>
+            <button class="tab-btn" id="btn-tab-gerenciamento" onclick="abrirAba(event, 'aba-gerenciamento')" data-aba="campanha">Campanhas & Agendadas</button>
+            <button class="tab-btn" id="btn-tab-sessoes" onclick="abrirAba(event, 'aba-sessoes')" data-aba="sessoes">Sessões WhatsApp</button>
+            <button class="tab-btn" id="btn-tab-templates" onclick="abrirAba(event, 'aba-templates')" data-aba="templates">Templates</button>
+            <button class="tab-btn" id="btn-tab-carteiras" onclick="abrirAba(event, 'aba-carteiras')" data-aba="carteiras">Carteiras</button>
+            <button class="tab-btn" id="btn-tab-usuarios" onclick="abrirAba(event, 'aba-usuarios')" data-aba="usuarios">Usuários</button>
+            <button class="tab-btn" id="btn-tab-relatorios" onclick="abrirAba(event, 'aba-relatorios')" data-aba="relatorios">Relatórios</button>
+        </nav>
+
+        <div class="container">
+            
+            <!-- ABA 1: CAMPANHA -->
+            <div id="aba-campanha" class="tab-content">
+                <h3>🚀 Criar Nova Campanha de Disparo (Distelhamento Rotativo Automático)</h3>
+
+                <div id="painel-progresso">
+                    <h4 id="progresso-titulo" style="margin-top:0; color:#2e7d32;">📡 Executando Campanha...</h4>
+                    <p id="progresso-status" style="margin: 5px 0; font-size: 14px;">Processando contato 0 de 0...</p>
+                    <div class="progress-bar-container">
+                        <div id="barra-fill" class="progress-bar-fill"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 13px; color: #555; margin-bottom: 15px;">
+                        <span id="progresso-detalhes">Enviados: 0 | Erros: 0</span>
+                        <span id="progresso-tempo">Tempo restante estimado: Calculando...</span>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" id="btn-pausar" onclick="pausarCampanha()" class="btn" style="background: #ffc107; color: #333; margin:0;">⏸️ Pausar</button>
+                        <button type="button" id="btn-retomar" onclick="retomarCampanha()" class="btn" style="background: #17a2b8; display:none; margin:0;">▶️ Retomar</button>
+                        <button type="button" onclick="cancelarCampanhaAtiva()" class="btn" style="background: #dc3545; margin:0;">🛑 Cancelar Disparo</button>
+                    </div>
+                </div>
+
+                <div class="grid-layout">
+                    <div class="form-col">
+                        <form id="form-campanha" class="box-bloco">
+                            <label>Nome da Campanha:</label>
+                            <input type="text" name="nomeCampanha" placeholder="Ex: Promoção Brb Julho" required>
+
+                            <input type="hidden" name="sessaoWhatsApp" value="Principal">
+
+                            <label>Selecione a Carteira:</label>
+                            <select name="carteiraId" id="select-carteira-campanha" onchange="filtrarTemplatesPorCarteira()" required></select>
+
+                            <label>Selecione o Template:</label>
+                            <select name="templateId" id="select-templates" onchange="atualizarPreviewCampanha()" required></select>
+
+                            <label>⏰ Agendar Disparo para Data/Hora (Opcional):</label>
+                            <input type="datetime-local" name="dataAgendamento">
+
+                            <label style="margin-top: 15px; display: block; font-weight: bold; color: #075E54;">⚙️ Configurações e Filtros de Envio:</label>
+                            
+                            <!-- Caixa 1: Validador -->
+                            <div class="filtro-card">
+                                <label>
+                                    <input type="checkbox" name="validarNumeros" value="true" checked>
+                                    Validador Prévio de WhatsApp
+                                </label>
+                                <div class="filtro-descricao">
+                                    <strong>Marcado:</strong> Verifica no WhatsApp se o número realmente possui conta ativa antes de disparar, registrando como "Sem WhatsApp" caso não exista.<br>
+                                    <strong>Desmarcado:</strong> Tenta enviar direto para todos os números da planilha sem checagem prévia.
+                                </div>
+                            </div>
+
+                            <!-- Caixa 2: Auto-Retry -->
+                            <div class="filtro-card">
+                                <label>
+                                    <input type="checkbox" name="autoRetry" value="true" checked>
+                                    Auto-Retry de Falhas de Rede
+                                </label>
+                                <div class="filtro-descricao">
+                                    <strong>Marcado:</strong> Caso ocorra instabilidade momentânea na conexão, o sistema tenta reenviar a mensagem até 3 vezes antes de registrar erro.<br>
+                                    <strong>Desmarcado:</strong> Na primeira falha de envio, o sistema desiste imediatamente e passa para o próximo.
+                                </div>
+                            </div>
+
+                            <!-- Caixa 3: Pausa Anti-Spam -->
+                            <div class="filtro-card">
+                                <label>
+                                    <input type="checkbox" name="pausaAntiSpam" value="true" checked>
+                                    Pausa de Segurança Anti-Spam (Cooldown)
+                                </label>
+                                <div class="filtro-descricao">
+                                    <strong>Marcado:</strong> A cada 30 mensagens enviadas, o sistema faz uma pausa automática de 3 minutos para simular comportamento humano e proteger contra banimentos.<br>
+                                    <strong>Desmarcado:</strong> Dispara a fila inteira de forma consecutiva sem pausas em lote.
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn" id="btn-iniciar-disparo" style="margin-top: 20px;">🚀 Iniciar ou Agendar Disparos</button>
+                        </form>
+                    </div>
+
+                    <div class="preview-col">
+                        <h4 style="margin-top:0; color:#075E54; text-align:center;">📱 Preview do Disparo</h4>
+                        <div class="whatsapp-chat">
+                            <div class="whatsapp-bubble">
+                                <img id="preview-campanha-img" src="" alt="Banner">
+                                <div id="preview-campanha-texto" style="white-space: pre-wrap;">Selecione um template para ver a prévia...</div>
+                                <div class="whatsapp-time">12:00 ✓✓</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="box-bloco" style="margin-top: 20px; border-left: 4px solid #25D366;">
+                    <label><strong>📋 Instruções para o arquivo CSV:</strong></label>
+                    <p style="font-size: 13px; color: #555; margin: 5px 0 0 0;">
+                        Separador por ponto e vírgula (<code>;</code>). O sistema normaliza automaticamente DDI e 9º dígito.<br>
+                        Tags aceitas nos templates: <code>{{var1}}</code> até <code>{{var10}}</code> e <code>{{COD_DEV}}</code>.
+                    </p>
+                    <input type="file" form="form-campanha" name="planilha" accept=".csv" required style="margin-top: 15px;">
+                </div>
+            </div>
+
+            <!-- OUTRAS ABAS (Mantidas idênticas) -->
+            <div id="aba-gerenciamento" class="tab-content">
+                <h3>⏰ Campanhas Agendadas</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome da Campanha</th>
+                            <th>Data e Hora Agendada</th>
+                            <th>Conta WhatsApp</th>
+                            <th>Status</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpo-agendadas">
+                        <tr><td colspan="5" style="text-align: center;">Nenhuma campanha agendada no momento.</td></tr>
+                    </tbody>
+                </table>
+
+                <h3 style="margin-top: 40px;">📊 Resumo Sintético e Analítico de Campanhas</h3>
+                <input type="text" id="busca-sintetico" placeholder="🔍 Pesquisar campanha ou carteira realizada..." oninput="filtrarResumoSintetico()" style="margin-bottom: 15px;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Campanha</th>
+                            <th>Carteira</th>
+                            <th>Template</th>
+                            <th>Arquivo</th>
+                            <th>Total</th>
+                            <th>Enviados</th>
+                            <th>Erros</th>
+                            <th>Última Execução</th>
+                            <th>Ações de Download</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpo-sintetico">
+                        <tr><td colspan="9" style="text-align: center;">Carregando resumo sintético...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="aba-sessoes" class="tab-content">
+                <h3>📱 Gerenciamento de Conexões WhatsApp (Multi-Contas / Distelhamento)</h3>
+                <div class="box-bloco">
+                    <h4 style="margin-top:0; color:#075E54;">Adicionar Nova Sessão / Número</h4>
+                    <p style="font-size: 13px; color: #666;">Cadastre contas adicionais (ex: "Comercial2", "Suporte") para que o sistema divida os envios de forma totalmente rotativa entre elas.</p>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="input-nova-sessao" placeholder="Nome da Sessão (Ex: Comercial2)" style="margin: 0; flex: 1;">
+                        <button class="btn" onclick="cadastrarSessao()" style="width: auto; padding: 0 25px; margin: 0;">➕ Criar e Gerar QR Code</button>
+                    </div>
+                </div>
+
+                <div id="modal-qrcode" style="display:none; text-align: center; background: #fff; padding: 25px; border: 2px dashed #25D366; border-radius: 8px; margin-bottom: 25px;">
+                    <h4 id="qrcode-titulo" style="margin-top:0; color:#075E54;">Escaneie o QR Code para a sessão: ...</h4>
+                    <div id="qrcode-container" style="display: inline-block; background: white; padding: 15px; border-radius: 6px;"></div>
+                    <p style="font-size: 13px; color: #666; margin-top: 10px;">Abra o WhatsApp no seu celular > Aparelhos Conectados > Conectar Aparelho</p>
+                </div>
+
+                <h3>Lista de Sessões Conectadas</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Identificador da Sessão</th>
+                            <th>Número do WhatsApp Conectado</th>
+                            <th>Status da Conexão</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpo-tabela-sessoes">
+                        <tr><td colspan="4" style="text-align: center;">Carregando sessões...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="aba-templates" class="tab-content">
+                <h3>📝 Gerenciamento de Templates & Modo Teste</h3>
+                <div class="grid-layout">
+                    <div class="form-col">
+                        <form id="form-template" class="box-bloco" enctype="multipart/form-data">
+                            <input type="hidden" id="template-id" name="id">
+                            <h4 id="form-template-titulo" style="margin-top:0; color:#075E54;">Novo Template</h4>
+                            
+                            <label>Vincular à Carteira:</label>
+                            <select id="select-carteira-template" name="carteiraId" required></select>
+
+                            <input type="text" id="template-nome" name="nome" placeholder="Nome do Template" required>
+                            <input type="text" id="template-codigo" name="codigo" placeholder="Código Único" required>
+                            
+                            <label>🖼️ Imagem Anexada (Opcional - Ex: Banner):</label>
+                            <input type="file" id="template-imagem" name="imagem" accept="image/*" onchange="mostrarPreviewImagem(event)">
+
+                            <textarea id="texto-template" name="texto" rows="5" placeholder="Texto da Mensagem (ex: Olá {{var1}}, seu valor é {{var2}})" required oninput="atualizarPreviewTexto(this.value)"></textarea>
+
+                            <button type="submit" class="btn" id="btn-salvar-template">Salvar Template</button>
+                            <button type="button" class="btn" onclick="abrirModalTeste()" style="background: #17a2b8; margin-top: 10px;">🧪 Testar Disparo deste Template</button>
+                            <button type="button" id="btn-cancelar-template" onclick="limparFormularioTemplate()" style="display:none; width:100%; padding:10px; background:#6c757d; color:white; border:none; border-radius:4px; cursor:pointer; margin-top: 10px;">Cancelar</button>
+                        </form>
+                    </div>
+
+                    <div class="preview-col">
+                        <h4 style="margin-top:0; color:#075E54; text-align:center;">📱 Preview em Tempo Real</h4>
+                        <div class="whatsapp-chat">
+                            <div class="whatsapp-bubble">
+                                <img id="preview-img" src="" alt="Banner">
+                                <div id="preview-texto" style="white-space: pre-wrap;">Digite a mensagem ao lado para visualizar...</div>
+                                <div class="whatsapp-time">12:00 ✓✓</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <input type="text" id="busca-templates" placeholder="🔍 Pesquisar template por nome ou código..." oninput="filtrarTemplates()" style="margin-top: 20px;">
+                <table>
+                    <thead><tr><th>Carteira</th><th>Nome</th><th>Código</th><th>Ações</th></tr></thead>
+                    <tbody id="tabela-templates-corpo"></tbody>
+                </table>
+            </div>
+
+            <div id="aba-carteiras" class="tab-content">
+                <h3>💼 Cadastro e Edição de Carteiras</h3>
+                <form id="form-carteira" class="box-bloco">
+                    <input type="hidden" id="carteira-id" name="id">
+                    <h4 id="form-carteira-titulo" style="margin-top:0; color:#075E54;">Nova Carteira</h4>
+
+                    <input type="text" id="carteira-nome" name="nome" placeholder="Nome da Carteira (Ex: Atacadão Promoção)" required>
+                    <input type="text" id="carteira-codigo" name="codigo" placeholder="Código (Ex: 220)" required>
+                    <select id="carteira-status" name="status">
+                        <option value="Ativo">Ativo</option>
+                        <option value="Inativo">Inativo</option>
+                    </select>
+                    <button type="submit" class="btn" id="btn-salvar-carteira">Cadastrar Carteira</button>
+                    <button type="button" id="btn-cancelar-carteira" onclick="limparFormularioCarteira()" style="display:none; width:100%; padding:10px; background:#6c757d; color:white; border:none; border-radius:4px; cursor:pointer;">Cancelar</button>
+                </form>
+
+                <input type="text" id="busca-carteiras" placeholder="🔍 Pesquisar carteira por nome ou código..." oninput="filtrarCarteiras()" style="margin-top: 20px;">
+                <table>
+                    <thead><tr><th>Nome</th><th>Código</th><th>Status</th><th>Ações</th></tr></thead>
+                    <tbody id="tabela-carteiras-corpo"></tbody>
+                </table>
+            </div>
+
+            <div id="aba-usuarios" class="tab-content">
+                <h3>👥 Gerenciamento de Usuários e Permissões</h3>
+                <form id="form-usuario" class="box-bloco">
+                    <input type="hidden" id="usuario-id" name="id">
+                    <h4 id="form-usuario-titulo" style="margin-top:0; color:#075E54;">Novo Usuário</h4>
+                    
+                    <input type="text" id="usuario-nome" name="nome" placeholder="Nome Completo" required>
+                    <input type="email" id="usuario-login" name="login" placeholder="E-mail de Acesso" required>
+                    <input type="password" id="usuario-senha" name="senha" placeholder="Senha de Acesso" required>
+                    
+                    <div style="display: flex; gap: 15px;">
+                        <div style="flex: 1;">
+                            <label>Tipo de Perfil:</label>
+                            <select id="usuario-tipo" name="tipo" onchange="tratarMudancaTipoPerfil()">
+                                <option value="Usuário">Usuário Comum</option>
+                                <option value="Administrador">Administrador</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1;">
+                            <label>Status:</label>
+                            <select id="usuario-status" name="status">
+                                <option value="Ativo">Ativo</option>
+                                <option value="Inativo">Inativo</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="box-permissoes-container">
+                        <label><strong>Permissões de Acesso às Abas:</strong></label>
+                        <div class="permissoes-box">
+                            <label><input type="checkbox" name="permissoes" value="campanha" checked> Campanhas</label>
+                            <label><input type="checkbox" name="permissoes" value="templates" checked> Templates</label>
+                            <label><input type="checkbox" name="permissoes" value="carteiras" checked> Carteiras</label>
+                            <label><input type="checkbox" name="permissoes" value="usuarios" checked> Usuários</label>
+                            <label><input type="checkbox" name="permissoes" value="relatorios" checked> Relatórios</label>
+                            <label><input type="checkbox" name="permissoes" value="sessoes" checked> Sessões WhatsApp</label>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn" id="btn-salvar-usuario">Cadastrar Novo Usuário</button>
+                    <button type="button" id="btn-cancelar-usuario" onclick="limparFormularioUsuario()" style="display:none; width:100%; padding:10px; background:#6c757d; color:white; border:none; border-radius:4px; cursor:pointer;">Cancelar</button>
+                </form>
+                <table>
+                    <thead><tr><th>Nome</th><th>Login</th><th>Tipo</th><th>Permissões Ativas</th><th>Status</th><th>Ações</th></tr></thead>
+                    <tbody id="tabela-usuarios-corpo"></tbody>
+                </table>
+            </div>
+
+            <div id="aba-relatorios" class="tab-content">
+                <h3>📊 Relatório Detalhado de Ações Massivas</h3>
+                <div class="box-bloco" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 200px; margin: 0;">
+                        <label>Data Inicial:</label>
+                        <input type="date" id="filtro-data-inicio" style="margin: 0;">
+                    </div>
+                    <div style="flex: 1; min-width: 200px; margin: 0;">
+                        <label>Data Final:</label>
+                        <input type="date" id="filtro-data-fim" style="margin: 0;">
+                    </div>
+                    <div>
+                        <button class="btn" onclick="carregarRelatorios()" style="width: auto; padding: 12px 20px; margin: 0;">Filtrar Período</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                    <button class="btn" onclick="limparFiltrosRelatorio()" style="width: auto; padding: 8px 15px; margin: 0; background: #6c757d;">Exibir Todos</button>
+                    <div>
+                        <button onclick="baixarRelatorioExcel()" style="background: #107c41; color: white; border: none; padding: 9px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">📥 Baixar Filtrados (.csv)</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Campanha</th>
+                            <th>Carteira</th>
+                            <th>Template</th>
+                            <th>Arquivo</th>
+                            <th>Cod. Dev</th>
+                            <th>Telefone</th>
+                            <th>Status</th>
+                            <th>Data/Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpo-relatorio"></tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let listaTemplatesMemoria = [];
+        let listaCarteirasMemoria = [];
+        let sinteticoMemoria = [];
+        let relatoriosMemoria = [];
+        let relatoriosFiltradosMemoria = [];
+        let intervaloProgresso = null;
+        let qrcodeObj = null;
+
+        socket.on('qr', function(data) {
+            document.getElementById('modal-qrcode').style.display = 'block';
+            document.getElementById('qrcode-titulo').innerText = `Escaneie o QR Code para a sessão: [${data.sessao}]`;
+            
+            const container = document.getElementById('qrcode-container');
+            container.innerHTML = '';
+            qrcodeObj = new QRCode(container, {
+                text: data.qr,
+                width: 256,
+                height: 256
+            });
+        });
+
+        socket.on('sessao_status', function(data) {
+            if (data.status === 'Conectado') {
+                document.getElementById('modal-qrcode').style.display = 'none';
+                alert(`✅ Sessão [${data.sessao}] conectada com sucesso no número: ${data.numero}`);
+            }
+            carregarSessoesWhatsApp();
+        });
+
+        socket.on('sessao_removida', function(data) {
+            carregarSessoesWhatsApp();
+        });
+
+        document.getElementById('form-login').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const senha = document.getElementById('login-senha').value;
+
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ login: email, senha: senha })
+                });
+                const data = await res.json();
+
+                if (!res.ok || !data.sucesso) {
+                    alert('❌ ' + (data.erro || 'Acesso negado.'));
+                    return;
+                }
+
+                localStorage.setItem('usuarioLogado', JSON.stringify(data.usuario));
+                verificarSessao();
+            } catch (err) {
+                alert('❌ Erro ao conectar com o servidor.');
+            }
+        });
+
+        function verificarSessao() {
+            const usuario = localStorage.getItem('usuarioLogado');
+            if (usuario) {
+                const userObj = JSON.parse(usuario);
+                document.getElementById('tela-login').style.display = 'none';
+                document.getElementById('app-principal').style.display = 'block';
+                document.getElementById('info-usuario').innerText = `👤 ${userObj.nome} (${userObj.tipo})`;
+                
+                aplicarPermissoes(userObj);
+                verificarStatusProgresso();
+                carregarSessoesWhatsApp();
+            } else {
+                document.getElementById('tela-login').style.display = 'flex';
+                document.getElementById('app-principal').style.display = 'none';
+            }
+        }
+
+        function aplicarPermissoes(userObj) {
+            const botoesMenu = document.querySelectorAll('#menu-navegacao button');
+            let primeiraAbaDisponivel = null;
+
+            botoesMenu.forEach(btn => {
+                const abaNome = btn.getAttribute('data-aba');
+                const temAcesso = userObj.tipo === 'Administrador' || (userObj.permissoes && userObj.permissoes.includes(abaNome));
+
+                if (temAcesso) {
+                    btn.style.display = 'block';
+                    if (!primeiraAbaDisponivel) primeiraAbaDisponivel = 'aba-' + abaNome;
+                } else {
+                    btn.style.display = 'none';
+                }
+            });
+
+            if (primeiraAbaDisponivel) {
+                const btnAlvo = document.querySelector(`[onclick*="${primeiraAbaDisponivel}"]`);
+                if (btnAlvo) abrirAba({ currentTarget: btnAlvo }, primeiraAbaDisponivel);
+            }
+        }
+
+        function fazerLogout() {
+            localStorage.removeItem('usuarioLogado');
+            window.location.reload();
+        }
+
+        verificarSessao();
+
+        function abrirAba(evt, nomeAba) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(nomeAba).classList.add('active');
+            evt.currentTarget.classList.add('active');
+            
+            if(nomeAba === 'aba-campanha') { carregarSelectCarteirasCampanha(); carregarSelectTemplates(); carregarSessoesWhatsApp(); }
+            if(nomeAba === 'aba-gerenciamento') { carregarCampanhasAgendadas(); carregarResumoSintetico(); }
+            if(nomeAba === 'aba-sessoes') carregarSessoesWhatsApp();
+            if(nomeAba === 'aba-templates') carregarTabelaTemplates();
+            if(nomeAba === 'aba-carteiras') carregarTabelaCarteiras();
+            if(nomeAba === 'aba-usuarios') carregarTabelaUsuarios();
+            if(nomeAba === 'aba-relatorios') carregarRelatorios();
+        }
+
+        function tratarMudancaTipoPerfil() {
+            const tipo = document.getElementById('usuario-tipo').value;
+            const boxPermissoes = document.getElementById('box-permissoes-container');
+            const checkboxes = boxPermissoes.querySelectorAll('input[type="checkbox"]');
+            if (tipo === 'Administrador') {
+                checkboxes.forEach(cb => cb.checked = true);
+                boxPermissoes.style.opacity = '0.6';
+            } else {
+                boxPermissoes.style.opacity = '1';
+            }
+        }
+
+        async function carregarSessoesWhatsApp() {
+            try {
+                const res = await fetch('/api/sessoes-whatsapp');
+                const sessoes = await res.json();
+                
+                const corpoTabela = document.getElementById('corpo-tabela-sessoes');
+                if (corpoTabela) {
+                    if (sessoes.length === 0) {
+                        corpoTabela.innerHTML = '<tr><td colspan="4" style="text-align: center;">Nenhuma sessão cadastrada.</td></tr>';
+                        return;
+                    }
+                    corpoTabela.innerHTML = sessoes.map(s => `
+                        <tr>
+                            <td><strong>${s.nome}</strong></td>
+                            <td>${s.numero}</td>
+                            <td><span class="badge ${s.status === 'Conectado' ? 'conectado' : 'desconectado'}">${s.status}</span></td>
+                            <td>
+                                <button onclick="reiniciarSessaoWhatsApp('${s.nome}')" style="background:#ffc107; color:#333; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold; margin-right:5px;">Reiniciar</button>
+                                <button onclick="excluirSessaoWhatsApp('${s.nome}')" style="background:#dc3545; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold;">Excluir</button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch(e) {}
+        }
+
+        async function cadastrarSessao() {
+            const nomeSessao = document.getElementById('input-nova-sessao').value.trim();
+            if (!nomeSessao) { alert('Informe um nome para a sessão.'); return; }
+
+            try {
+                const res = await fetch('/api/sessoes-whatsapp', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ nomeSessao })
+                });
+                const data = await res.json();
+                if (!res.ok) alert('❌ ' + data.erro);
+                else {
+                    alert(`⏳ Sessão [${nomeSessao}] iniciada. Aguarde o QR Code aparecer na tela.`);
+                    document.getElementById('input-nova-sessao').value = '';
+                    carregarSessoesWhatsApp();
+                }
+            } catch(e) {
+                alert('❌ Erro ao criar sessão.');
+            }
+        }
+
+        async function reiniciarSessaoWhatsApp(nomeSessao) {
+            if (confirm(`Deseja reiniciar a sessão [${nomeSessao}] para gerar um novo QR Code?`)) {
+                await fetch(`/api/sessoes-whatsapp/reiniciar/${nomeSessao}`, { method: 'POST' });
+                alert('Reiniciando... Aguarde o QR Code aparecer.');
+                carregarSessoesWhatsApp();
+            }
+        }
+
+        async function excluirSessaoWhatsApp(nomeSessao) {
+            if (confirm(`Deseja realmente desconectar e excluir a sessão [${nomeSessao}]?`)) {
+                await fetch(`/api/sessoes-whatsapp/${nomeSessao}`, { method: 'DELETE' });
+                alert('Sessão removida com sucesso.');
+                carregarSessoesWhatsApp();
+            }
+        }
+
+        function atualizarPreviewTexto(texto) {
+            const preview = document.getElementById('preview-texto');
+            preview.innerText = texto.trim() === '' ? 'Digite a mensagem ao lado para visualizar...' : texto;
+        }
+
+        function mostrarPreviewImagem(event) {
+            const file = event.target.files[0];
+            const imgPreview = document.getElementById('preview-img');
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imgPreview.src = e.target.result;
+                    imgPreview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                imgPreview.src = '';
+                imgPreview.style.display = 'none';
+            }
+        }
+
+        async function carregarSelectTemplates() {
+            const res = await fetch('/api/templates');
+            listaTemplatesMemoria = await res.json();
+            filtrarTemplatesPorCarteira();
+        }
+
+        function filtrarTemplatesPorCarteira() {
+            const carteiraIdSelecionada = document.getElementById('select-carteira-campanha').value;
+            const selectTemplate = document.getElementById('select-templates');
+            const templatesFiltrados = listaTemplatesMemoria.filter(t => Number(t.carteiraId) === Number(carteiraIdSelecionada));
+
+            if (templatesFiltrados.length === 0) {
+                selectTemplate.innerHTML = '<option value="">Nenhum template cadastrado para esta carteira</option>';
+                atualizarPreviewCampanha();
+                return;
+            }
+
+            selectTemplate.innerHTML = '<option value="">Selecione o template...</option>' + 
+                templatesFiltrados.map(t => `<option value="${t.id}">${t.nome} (Código: ${t.codigo})</option>`).join('');
+            
+            atualizarPreviewCampanha();
+        }
+
+        function atualizarPreviewCampanha() {
+            const templateId = document.getElementById('select-templates').value;
+            const textoPreview = document.getElementById('preview-campanha-texto');
+            const imgPreview = document.getElementById('preview-campanha-img');
+            const template = listaTemplatesMemoria.find(t => t.id == templateId);
+
+            if (template) {
+                textoPreview.innerText = template.texto;
+                if (template.imagem) {
+                    imgPreview.src = '/' + template.imagem.replace(/\\/g, '/');
+                    imgPreview.style.display = 'block';
+                } else {
+                    imgPreview.src = '';
+                    imgPreview.style.display = 'none';
+                }
+            } else {
+                textoPreview.innerText = 'Selecione um template para ver a prévia...';
+                imgPreview.src = '';
+                imgPreview.style.display = 'none';
+            }
+        }
+
+        async function abrirModalTeste() {
+            const texto = document.getElementById('texto-template').value;
+            if (!texto.trim()) { alert('Preencha o texto do template antes de testar.'); return; }
+
+            const telefoneTeste = prompt('Informe o número de WhatsApp para receber o teste (ex: 5541999999999):');
+            if (!telefoneTeste) return;
+
+            const formElement = document.getElementById('form-template');
+            const formData = new FormData(formElement);
+            formData.append('telefoneTeste', telefoneTeste);
+
+            try {
+                const res = await fetch('/api/testar-template', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (!res.ok) alert('❌ ' + (data.erro || 'Falha ao testar'));
+                else alert('✅ ' + data.mensagem);
+            } catch(e) {
+                alert('❌ Erro de conexão ao testar.');
+            }
+        }
+
+        document.getElementById('form-campanha').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const res = await fetch('/api/disparar', { method: 'POST', body: new FormData(e.target) });
+            const data = await res.json();
+            
+            if (!res.ok) {
+                alert('❌ ' + data.erro);
+                return;
+            }
+
+            alert(data.mensagem);
+            iniciarMonitoramentoProgresso();
+        });
+
+        async function pausarCampanha() {
+            await fetch('/api/pausar-disparo', { method: 'POST' });
+            document.getElementById('btn-pausar').style.display = 'none';
+            document.getElementById('btn-retomar').style.display = 'block';
+            document.getElementById('progresso-titulo').innerText = '⏸️ Campanha Pausada';
+        }
+
+        async function retomarCampanha() {
+            await fetch('/api/retomar-disparo', { method: 'POST' });
+            document.getElementById('btn-retomar').style.display = 'none';
+            document.getElementById('btn-pausar').style.display = 'block';
+        }
+
+        async function cancelarCampanhaAtiva() {
+            if (confirm('Deseja cancelar o disparo atual?')) {
+                await fetch('/api/cancelar-disparo', { method: 'POST' });
+                alert('Campanha cancelada.');
+                window.location.reload();
+            }
+        }
+
+        function iniciarMonitoramentoProgresso() {
+            if (intervaloProgresso) clearInterval(intervaloProgresso);
+            const painel = document.getElementById('painel-progresso');
+            if (painel) painel.style.display = 'block';
+            
+            const btnIniciar = document.getElementById('btn-iniciar-disparo');
+            if (btnIniciar) {
+                btnIniciar.disabled = true;
+                btnIniciar.style.opacity = '0.6';
+            }
+
+            intervaloProgresso = setInterval(verificarStatusProgresso, 2000);
+        }
+
+        async function verificarStatusProgresso() {
+            try {
+                const res = await fetch('/api/status-disparo');
+                const progresso = await res.json();
+
+                if (progresso.ativo) {
+                    document.getElementById('painel-progresso').style.display = 'block';
+                    const percentual = Math.round((progresso.atual / progresso.total) * 100);
+                    document.getElementById('barra-fill').style.width = percentual + '%';
+                    if (!progresso.pausado) {
+                        document.getElementById('progresso-titulo').innerText = `📡 Disparando: ${progresso.nome} (${percentual}%)`;
+                    }
+                    document.getElementById('progresso-status').innerText = `Processando contato ${progresso.atual} de ${progresso.total}...`;
+                    document.getElementById('progresso-detalhes').innerText = `Enviados: ${progresso.enviados} | Erros / Inválidos: ${progresso.erros}`;
+
+                    const itensRestantes = progresso.total - progresso.atual;
+                    const segundosRestantes = itensRestantes * 17;
+                    const minutos = Math.floor(segundosRestantes / 60);
+                    const segundos = segundosRestantes % 60;
+                    document.getElementById('progresso-tempo').innerText = `Tempo restante estimado: ~${minutos}m ${segundos}s`;
+                } else {
+                    if (intervaloProgresso) {
+                        clearInterval(intervaloProgresso);
+                        intervaloProgresso = null;
+                        document.getElementById('progresso-titulo').innerText = '✅ Campanha Concluída!';
+                        document.getElementById('barra-fill').style.width = '100%';
+                        document.getElementById('progresso-tempo').innerText = 'Processo de disparos finalizado.';
+                        document.getElementById('btn-pausar').style.display = 'none';
+                        document.getElementById('btn-retomar').style.display = 'none';
+                        const btnIniciar = document.getElementById('btn-iniciar-disparo');
+                        if (btnIniciar) {
+                            btnIniciar.disabled = false;
+                            btnIniciar.style.opacity = '1';
+                        }
+                    }
+                }
+            } catch (e) {}
+        }
+
+        async function carregarSelectCarteirasCampanha() {
+            const res = await fetch('/api/carteiras');
+            const data = await res.json();
+            document.getElementById('select-carteira-campanha').innerHTML = data.map(c => `<option value="${c.id}">${c.nome} (Cod: ${c.codigo})</option>`).join('');
+        }
+
+        async function carregarCampanhasAgendadas() {
+            const res = await fetch('/api/agendadas');
+            const data = await res.json();
+            const corpo = document.getElementById('corpo-agendadas');
+
+            if (data.length === 0) {
+                corpo.innerHTML = '<tr><td colspan="5" style="text-align: center;">Nenhuma campanha agendada no momento.</td></tr>';
+                return;
+            }
+
+            corpo.innerHTML = data.map(a => `
+                <tr>
+                    <td><strong>${a.nomeCampanha}</strong></td>
+                    <td>${a.dataAgendamento.replace('T', ' ')}</td>
+                    <td>${a.sessaoWhatsApp}</td>
+                    <td><span class="badge" style="background:#fff3cd; color:#856404;">Agendada</span></td>
+                    <td>
+                        <button onclick="reagendarCampanha(${a.id})" style="background:#ffc107; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold; margin-right:5px;">Reagendar</button>
+                        <button onclick="cancelarAgendamento(${a.id})" style="background:#dc3545; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold;">Cancelar</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function cancelarAgendamento(id) {
+            if (confirm('Deseja realmente cancelar este agendamento?')) {
+                await fetch(`/api/agendadas/${id}`, { method: 'DELETE' });
+                carregarCampanhasAgendadas();
+            }
+        }
+
+        async function reagendarCampanha(id) {
+            const novaData = prompt('Informe a nova data e hora (Ex: 2026-09-10T09:30):');
+            if (novaData) {
+                await fetch(`/api/agendadas/reagendar/${id}`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ novaData })
+                });
+                alert('Campanha reagendada com sucesso!');
+                carregarCampanhasAgendadas();
+            }
+        }
+
+        async function carregarResumoSintetico() {
+            const res = await fetch('/api/sintetico-campanhas');
+            sinteticoMemoria = await res.json();
+            renderizarSintetico(sinteticoMemoria);
+        }
+
+        function renderizarSintetico(dados) {
+            const corpo = document.getElementById('corpo-sintetico');
+            if (dados.length === 0) {
+                corpo.innerHTML = '<tr><td colspan="9" style="text-align: center;">Nenhuma campanha registrada ainda.</td></tr>';
+                return;
+            }
+
+            corpo.innerHTML = dados.map(s => `
+                <tr>
+                    <td><strong>${s.campanha}</strong></td>
+                    <td>${s.carteira || '-'}</td>
+                    <td>${s.template || '-'}</td>
+                    <td><small>${s.arquivo || '-'}</small></td>
+                    <td>${s.total}</td>
+                    <td><span class="badge enviado">${s.enviados}</span></td>
+                    <td><span class="badge erro">${s.erros}</span></td>
+                    <td>${s.ultima_data}</td>
+                    <td>
+                        <button onclick="baixarAnaliticoCampanha('${s.campanha}')" style="background:#0078d4; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold; margin-right:5px;">Baixar Analítico</button>
+                        <button onclick="baixarSinteticoCampanha('${s.campanha}')" style="background:#107c41; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold;">Baixar Sintético</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filtrarResumoSintetico() {
+            const termo = document.getElementById('busca-sintetico').value.toLowerCase();
+            const filtrados = sinteticoMemoria.filter(s => s.campanha.toLowerCase().includes(termo) || (s.carteira && s.carteira.toLowerCase().includes(termo)));
+            renderizarSintetico(filtrados);
+        }
+
+        async function baixarAnaliticoCampanha(nomeCampanha) {
+            const res = await fetch('/api/relatorios');
+            const relatorios = await res.json();
+            const dados = relatorios.filter(r => r.campanha === nomeCampanha);
+            
+            if (dados.length === 0) { alert('Nenhum dado encontrado.'); return; }
+
+            let csv = "\uFEFFCampanha;Carteira;Template;Arquivo;Cod_Dev;Telefone;Status;Data\r\n";
+            dados.forEach(r => {
+                csv += `"${r.campanha}";"${r.carteira || ''}";"${r.template || ''}";"${r.arquivo || ''}";"${r.cod_dev || ''}";"${r.telefone}";"${r.status}";"${r.data}"\r\n`;
+            });
+            dispararDownloadCsv(csv, `Analitico_${nomeCampanha}.csv`);
+        }
+
+        async function baixarSinteticoCampanha(nomeCampanha) {
+            const item = sinteticoMemoria.find(s => s.campanha === nomeCampanha);
+            if (!item) { alert('Resumo não encontrado.'); return; }
+
+            let csv = "\uFEFFCampanha;Carteira;Template;Arquivo;Total;Enviados;Erros;Ultima_Execucao\r\n";
+            csv += `"${item.campanha}";"${item.carteira || ''}";"${item.template || ''}";"${item.arquivo || ''}";"${item.total}";"${item.enviados}";"${item.erros}";"${item.ultima_data}"\r\n`;
+            dispararDownloadCsv(csv, `Sintetico_${nomeCampanha}.csv`);
+        }
+
+        function dispararDownloadCsv(conteudo, nomeArquivo) {
+            const blob = new Blob([conteudo], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.setAttribute("href", url);
+            link.setAttribute("download", nomeArquivo);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        document.getElementById('form-template').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('template-id').value;
+            const formData = new FormData(e.target); 
+            try {
+                const res = await fetch(id ? `/api/templates/${id}` : '/api/templates', { method: id ? 'PUT' : 'POST', body: formData });
+                const data = await res.json();
+                if (!res.ok || data.erro) { alert('❌ Erro ao salvar: ' + (data.erro || 'Falha')); return; }
+                alert('✅ Template salvo com sucesso!');
+                limparFormularioTemplate();
+                carregarTabelaTemplates();
+            } catch (err) { alert('❌ Erro de conexão.'); }
+        });
+
+        async function carregarTabelaTemplates() {
+            const resC = await fetch('/api/carteiras');
+            const carteiras = await resC.json();
+            document.getElementById('select-carteira-template').innerHTML = carteiras.map(c => `<option value="${c.id}">${c.nome} (Cod: ${c.codigo})</option>`).join('');
+
+            const res = await fetch('/api/templates');
+            listaTemplatesMemoria = await res.json();
+            renderizarTemplates(listaTemplatesMemoria);
+        }
+
+        function renderizarTemplates(dados) {
+            document.getElementById('tabela-templates-corpo').innerHTML = dados.map(t => `
+                <tr>
+                    <td><strong>${t.nomeCarteira || 'Geral'}</strong></td>
+                    <td>${t.nome}</td>
+                    <td>${t.codigo}</td>
+                    <td>
+                        <button onclick='prepararEdicaoTemplate(${JSON.stringify(t)})' style="background:#ffc107; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold;">Editar</button>
+                        <button onclick="excluirTemplate(${t.id})" style="background:#dc3545; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold;">Excluir</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filtrarTemplates() {
+            const termo = document.getElementById('busca-templates').value.toLowerCase();
+            const filtrados = listaTemplatesMemoria.filter(t => t.nome.toLowerCase().includes(termo) || t.codigo.toLowerCase().includes(termo));
+            renderizarTemplates(filtrados);
+        }
+
+        function prepararEdicaoTemplate(t) {
+            document.getElementById('template-id').value = t.id;
+            document.getElementById('select-carteira-template').value = t.carteiraId || '';
+            document.getElementById('template-nome').value = t.nome;
+            document.getElementById('template-codigo').value = t.codigo;
+            document.getElementById('texto-template').value = t.texto;
+            document.getElementById('template-imagem').value = ''; 
+            atualizarPreviewTexto(t.texto);
+            const imgPreview = document.getElementById('preview-img');
+            if (t.imagem) {
+                imgPreview.src = '/' + t.imagem.replace(/\\/g, '/');
+                imgPreview.style.display = 'block';
+            } else {
+                imgPreview.src = '';
+                imgPreview.style.display = 'none';
+            }
+            document.getElementById('form-template-titulo').innerText = 'Editando Template ID: ' + t.id;
+            document.getElementById('btn-salvar-template').innerText = 'Atualizar Template';
+            document.getElementById('btn-cancelar-template').style.display = 'block';
+            window.scrollTo({top:0, behavior:'smooth'});
+        }
+
+        function limparFormularioTemplate() {
+            document.getElementById('form-template').reset();
+            document.getElementById('template-id').value = '';
+            document.getElementById('template-imagem').value = '';
+            document.getElementById('form-template-titulo').innerText = 'Novo Template';
+            document.getElementById('btn-salvar-template').innerText = 'Salvar Template';
+            document.getElementById('btn-cancelar-template').style.display = 'none';
+            atualizarPreviewTexto('');
+            const imgPreview = document.getElementById('preview-img');
+            imgPreview.src = '';
+            imgPreview.style.display = 'none';
+        }
+
+        async function excluirTemplate(id) {
+            if(confirm('Excluir este template?')) {
+                await fetch(`/api/templates/${id}`, { method: 'DELETE' });
+                carregarTabelaTemplates();
+            }
+        }
+
+        document.getElementById('form-carteira').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('carteira-id').value;
+            const body = Object.fromEntries(new FormData(e.target));
+            await fetch(id ? `/api/carteiras/${id}` : '/api/carteiras', { method: id ? 'PUT' : 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) });
+            alert(id ? 'Carteira atualizada!' : 'Carteira cadastrada!');
+            limparFormularioCarteira();
+            carregarTabelaCarteiras();
+        });
+
+        async function carregarTabelaCarteiras() {
+            const res = await fetch('/api/carteiras');
+            listaCarteirasMemoria = await res.json();
+            renderizarCarteiras(listaCarteirasMemoria);
+        }
+
+        function renderizarCarteiras(dados) {
+            document.getElementById('tabela-carteiras-corpo').innerHTML = dados.map(c => `
+                <tr>
+                    <td><strong>${c.nome}</strong></td>
+                    <td>${c.codigo}</td>
+                    <td>${c.status}</td>
+                    <td>
+                        <button onclick='prepararEdicaoCarteira(${JSON.stringify(c)})' style="background:#ffc107; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold;">Editar</button>
+                        <button onclick="excluirCarteira(${c.id})" style="background:#dc3545; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold;">Excluir</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function filtrarCarteiras() {
+            const termo = document.getElementById('busca-carteiras').value.toLowerCase();
+            const filtradas = listaCarteirasMemoria.filter(c => c.nome.toLowerCase().includes(termo) || c.codigo.toLowerCase().includes(termo));
+            renderizarCarteiras(filtradas);
+        }
+
+        function prepararEdicaoCarteira(c) {
+            document.getElementById('carteira-id').value = c.id;
+            document.getElementById('carteira-nome').value = c.nome;
+            document.getElementById('carteira-codigo').value = c.codigo;
+            document.getElementById('carteira-status').value = c.status;
+            document.getElementById('form-carteira-titulo').innerText = 'Editando Carteira ID: ' + c.id;
+            document.getElementById('btn-salvar-carteira').innerText = 'Atualizar Carteira';
+            document.getElementById('btn-cancelar-carteira').style.display = 'block';
+            window.scrollTo({top:0, behavior:'smooth'});
+        }
+
+        function limparFormularioCarteira() {
+            document.getElementById('form-carteira').reset();
+            document.getElementById('carteira-id').value = '';
+            document.getElementById('form-carteira-titulo').innerText = 'Nova Carteira';
+            document.getElementById('btn-salvar-carteira').innerText = 'Cadastrar Carteira';
+            document.getElementById('btn-cancelar-carteira').style.display = 'none';
+        }
+
+        async function excluirCarteira(id) {
+            if(confirm('Excluir carteira?')) {
+                await fetch(`/api/carteiras/${id}`, { method: 'DELETE' });
+                carregarTabelaCarteiras();
+            }
+        }
+
+        document.getElementById('form-usuario').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('usuario-id').value;
+            const nome = document.getElementById('usuario-nome').value;
+            const login = document.getElementById('usuario-login').value;
+            const senha = document.getElementById('usuario-senha').value;
+            const tipo = document.getElementById('usuario-tipo').value;
+            const status = document.getElementById('usuario-status').value;
+
+            const permissoes = [];
+            document.querySelectorAll('#box-permissoes-container input[type="checkbox"]:checked').forEach(cb => { permissoes.push(cb.value); });
+            const body = { nome, login, senha, tipo, status, permissoes };
+
+            await fetch(id ? `/api/usuarios/${id}` : '/api/usuarios', { method: id ? 'PUT' : 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body) });
+            alert('Usuário salvo com sucesso!');
+            limparFormularioUsuario();
+            carregarTabelaUsuarios();
+        });
+
+        async function carregarTabelaUsuarios() {
+            const res = await fetch('/api/usuarios');
+            const data = await res.json();
+            document.getElementById('tabela-usuarios-corpo').innerHTML = data.map(u => {
+                const permissoesTexto = u.tipo === 'Administrador' ? 'Todas (Admin)' : (u.permissoes ? u.permissoes.join(', ') : 'Nenhuma');
+                return `
+                    <tr>
+                        <td>${u.nome}</td>
+                        <td>${u.login}</td>
+                        <td>${u.tipo}</td>
+                        <td><small>${permissoesTexto}</small></td>
+                        <td>${u.status}</td>
+                        <td>
+                            <button onclick='prepararEdicaoUsuario(${JSON.stringify(u)})' style="background:#ffc107; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold;">Editar</button>
+                            <button onclick="excluirUsuario(${u.id})" style="background:#dc3545; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer; font-weight:bold;">Excluir</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function prepararEdicaoUsuario(u) {
+            document.getElementById('usuario-id').value = u.id;
+            document.getElementById('usuario-nome').value = u.nome;
+            document.getElementById('usuario-login').value = u.login;
+            document.getElementById('usuario-senha').value = '';
+            document.getElementById('usuario-senha').placeholder = 'Deixe em branco para manter a senha atual';
+            document.getElementById('usuario-tipo').value = u.tipo;
+            document.getElementById('usuario-status').value = u.status;
+
+            const checkboxes = document.querySelectorAll('#box-permissoes-container input[type="checkbox"]');
+            checkboxes.forEach(cb => {
+                if (u.tipo === 'Administrador' || (u.permissoes && u.permissoes.includes(cb.value))) cb.checked = true;
+                else cb.checked = false;
+            });
+
+            tratarMudancaTipoPerfil();
+            document.getElementById('form-usuario-titulo').innerText = 'Editando Usuário ID: ' + u.id;
+            document.getElementById('btn-salvar-usuario').innerText = 'Atualizar Usuário';
+            document.getElementById('btn-cancelar-usuario').style.display = 'block';
+            window.scrollTo({top:0, behavior:'smooth'});
+        }
+
+        function limparFormularioUsuario() {
+            document.getElementById('form-usuario').reset();
+            document.getElementById('usuario-id').value = '';
+            document.getElementById('usuario-senha').placeholder = 'Senha de Acesso';
+            document.getElementById('form-usuario-titulo').innerText = 'Novo Usuário';
+            document.getElementById('btn-salvar-usuario').innerText = 'Cadastrar Novo Usuário';
+            document.getElementById('btn-cancelar-usuario').style.display = 'none';
+            document.querySelectorAll('#box-permissoes-container input[type="checkbox"]').forEach(cb => cb.checked = true);
+            tratarMudancaTipoPerfil();
+        }
+
+        async function excluirUsuario(id) {
+            if(confirm('Excluir usuário?')) {
+                await fetch(`/api/usuarios/${id}`, { method: 'DELETE' });
+                carregarTabelaUsuarios();
+            }
+        }
+
+        async function carregarRelatorios() {
+            const res = await fetch('/api/relatorios');
+            relatoriosMemoria = await res.json();
+            
+            const dataInicio = document.getElementById('filtro-data-inicio').value;
+            const dataFim = document.getElementById('filtro-data-fim').value;
+
+            relatoriosFiltradosMemoria = relatoriosMemoria.filter(r => {
+                if (!r.data) return true;
+                const dataRegistro = r.data.split(' ')[0];
+                if (dataInicio && dataRegistro < dataInicio) return false;
+                if (dataFim && dataRegistro > dataFim) return false;
+                return true;
+            });
+
+            document.getElementById('corpo-relatorio').innerHTML = relatoriosFiltradosMemoria.map(r => `
+                <tr>
+                    <td>${r.campanha}</td>
+                    <td>${r.carteira || '-'}</td>
+                    <td><strong>${r.template || '-'}</strong></td>
+                    <td><small>${r.arquivo || '-'}</small></td>
+                    <td><strong>${r.cod_dev || '-'}</strong></td>
+                    <td>${r.telefone}</td>
+                    <td><span class="badge ${r.status.includes('Enviado') ? 'enviado' : 'erro'}">${r.status}</span></td>
+                    <td>${r.data}</td>
+                </tr>
+            `).join('');
+        }
+
+        function limparFiltrosRelatorio() {
+            document.getElementById('filtro-data-inicio').value = '';
+            document.getElementById('filtro-data-fim').value = '';
+            carregarRelatorios();
+        }
+
+        function baixarRelatorioExcel() {
+            const dadosParaExportar = relatoriosFiltradosMemoria.length > 0 ? relatoriosFiltradosMemoria : relatoriosMemoria;
+            if (dadosParaExportar.length === 0) { alert('Não há dados nos relatórios para exportar.'); return; }
+
+            let csvContent = "\uFEFFCampanha;Carteira;Template;Arquivo;Cod_Dev;Telefone;Status;Data\r\n";
+            dadosParaExportar.forEach(r => {
+                csvContent += `"${(r.campanha || '').replace(/"/g, '""')}";"${(r.carteira || '').replace(/"/g, '""')}";"${(r.template || '').replace(/"/g, '""')}";"${(r.arquivo || '').replace(/"/g, '""')}";"${(r.cod_dev || '').replace(/"/g, '""')}";"${(r.telefone || '').replace(/"/g, '""')}";"${(r.status || '').replace(/"/g, '""')}";"${(r.data || '').replace(/"/g, '""')}"\r\n`;
+            });
+            dispararDownloadCsv(csvContent, "Relatorio_Disparos_Filtrado.csv");
+        }
+    </script>
+</body>
+</html>

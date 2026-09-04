@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel de Disparo - Teste</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f0f2f5; }
+        .container { background: white; padding: 20px; border-radius: 8px; max-width: 500px; margin: auto; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        input, textarea, button { width: 100%; margin-bottom: 15px; padding: 10px; box-sizing: border-box; }
+        button { background-color: #25D366; color: white; border: none; font-weight: bold; cursor: pointer; }
+        button:hover { background-color: #1da851; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>🚀 Nova Campanha de Teste</h2>
+        
+        <!-- Este formulário envia os dados direto para o seu servidor Node.js que está rodando -->
+        <form action="http://localhost:3000/disparar-campanha" method="POST" enctype="multipart/form-data">
+            
+            <label><strong>1. Selecione a Planilha (CSV):</strong></label>
+            <input type="file" name="planilha" accept=".csv" required>
+
+            <label><strong>2. Escreva o Template:</strong></label>
+            <p style="font-size: 12px; color: gray; margin-top: -10px;">Use as variáveis iguais as colunas do seu CSV. Ex: {{VARIAVEL1}}</p>
+            <textarea name="template" rows="4" required>Olá {{VARIAVEL1}}! Este é um teste da nova plataforma. O seu código é {{COD_DEV}}.</textarea>
+
+            <button type="submit">Iniciar Disparos em Massa</button>
+        </form>
+    </div>
+</body>
+</html>

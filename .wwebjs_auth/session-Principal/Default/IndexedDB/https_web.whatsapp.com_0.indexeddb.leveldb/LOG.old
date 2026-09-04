@@ -1,0 +1,23 @@
+2026/09/02-03:34:12.100 3a9c Reusing MANIFEST C:\Users\Math\Desktop\Programy\Plataforma WhatsApp Ativo\.wwebjs_auth\session-Principal\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/09/02-03:34:12.100 3a9c Recovering log #326
+2026/09/02-03:34:12.100 3a9c Reusing old log C:\Users\Math\Desktop\Programy\Plataforma WhatsApp Ativo\.wwebjs_auth\session-Principal\Default\IndexedDB\https_web.whatsapp.com_0.indexeddb.leveldb/000326.log 
+2026/09/02-03:34:12.662 3a9c Compacting 1@1 + 8@2 files
+2026/09/02-03:34:12.709 3a9c Generated table #329@1: 91561 keys, 2244390 bytes
+2026/09/02-03:34:12.746 3a9c Generated table #330@1: 66485 keys, 2252014 bytes
+2026/09/02-03:34:12.768 3a9c Generated table #331@1: 17804 keys, 2167574 bytes
+2026/09/02-03:34:12.783 3a9c Generated table #332@1: 2295 keys, 2155286 bytes
+2026/09/02-03:34:12.808 3a9c Generated table #333@1: 18663 keys, 2215940 bytes
+2026/09/02-03:34:12.833 3a9c Generated table #334@1: 18512 keys, 2191848 bytes
+2026/09/02-03:34:12.875 3a9c Generated table #335@1: 94407 keys, 2242659 bytes
+2026/09/02-03:34:12.882 3a9c Generated table #336@1: 11391 keys, 402908 bytes
+2026/09/02-03:34:12.882 3a9c Compacted 1@1 + 8@2 files => 15872619 bytes
+2026/09/02-03:34:12.882 3a9c compacted to: files[ 0 0 8 0 0 0 0 ]
+2026/09/02-03:34:12.882 3a9c Delete type=2 #317
+2026/09/02-03:34:12.883 3a9c Delete type=2 #318
+2026/09/02-03:34:12.883 3a9c Delete type=2 #319
+2026/09/02-03:34:12.883 3a9c Delete type=2 #320
+2026/09/02-03:34:12.883 3a9c Delete type=2 #321
+2026/09/02-03:34:12.883 3a9c Delete type=2 #322
+2026/09/02-03:34:12.883 3a9c Delete type=2 #323
+2026/09/02-03:34:12.883 3a9c Delete type=2 #324
+2026/09/02-03:34:12.883 3a9c Delete type=2 #327
