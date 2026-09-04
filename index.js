@@ -118,9 +118,12 @@ function criarClienteWhatsApp(idSessao) {
         try { sessaoAntiga.client.destroy(); } catch(e){}
     }
 
+    const caminhoChrome = fs.existsSync('/usr/bin/google-chrome') ? '/usr/bin/google-chrome' : '/usr/bin/chromium-browser';
+
     const client = new Client({
         authStrategy: new LocalAuth({ clientId: idSessao }),
         puppeteer: { 
+            executablePath: caminhoChrome,
             headless: true,
             args: [
                 '--no-sandbox',
