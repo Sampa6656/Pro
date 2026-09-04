@@ -1,3 +1,6 @@
+// 🔥 DEVE SER A PRIMEIRA LINHA ABSOLUTA DO ARQUIVO ANTES DOS REQUIRES
+process.env.PUPPETEER_CACHE_DIR = require('path').join(__dirname, '.puppeteer-cache');
+
 const express = require('express');
 const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
 const http = require('http');
