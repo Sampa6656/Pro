@@ -9,10 +9,6 @@ const sqlite3 = require('sqlite3').verbose();
 const { open } = require('sqlite');
 const path = require('path');
 const bcrypt = require('bcryptjs');
-const puppeteer = require('puppeteer');
-
-// Define o cache do Puppeteer localmente na pasta do projeto para evitar erros de permissão no Linux
-process.env.PUPPETEER_CACHE_DIR = path.join(__dirname, '.puppeteer-cache');
 
 if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
 if (!fs.existsSync('uploads/imagens')) fs.mkdirSync('uploads/imagens', { recursive: true });
@@ -116,18 +112,15 @@ iniciarBanco();
 
 const sessoesWhatsAppMap = new Map();
 
-async function criarClienteWhatsApp(idSessao) {
+function criarClienteWhatsApp(idSessao) {
     if (sessoesWhatsAppMap.has(idSessao)) {
         const sessaoAntiga = sessoesWhatsAppMap.get(idSessao);
         try { sessaoAntiga.client.destroy(); } catch(e){}
     }
 
-    const caminhoNavegador = await puppeteer.executablePath();
-
     const client = new Client({
         authStrategy: new LocalAuth({ clientId: idSessao }),
         puppeteer: { 
-            executablePath: caminhoNavegador,
             headless: true,
             args: [
                 '--no-sandbox',
